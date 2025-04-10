@@ -15,6 +15,7 @@ class OTPService {
 
         // Cấu hình transporter cho nodemailer
         const transporter = nodemailer.createTransport({
+
             service: 'gmail',
             auth: {
                 user: process.env.EMAIL_USER,
@@ -51,6 +52,7 @@ class OTPService {
             return token;
         } else {
             throw Object.assign(new Error("Mã OTP bị sai hoặc hết hạn"), { status: 401 });
+
         }
     }
 }

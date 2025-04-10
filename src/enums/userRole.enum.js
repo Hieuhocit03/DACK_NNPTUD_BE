@@ -4,3 +4,4 @@ const UserRoleENUM = Object.freeze({
 });
 
 module.exports = UserRoleENUM;
+
