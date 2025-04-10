@@ -1,18 +1,20 @@
-const express = require('express');
-const path = require('path');
-const cors = require('cors');
-const session = require('express-session');
-const config = require('./config/config');
-const connectDB = require('./config/database');
-const errorHandler = require('./middlewares/error.middleware');
-const initAdmin = require('./config/initAdmin');
-const fs = require('fs');
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+const config = require("./config/config");
+const connectDB = require("./config/database");
+const errorHandler = require("./middlewares/error.middleware");
+const initAdmin = require("./config/initAdmin");
+const fs = require("fs");
 
-const authRoutes = require('./routes/auth.routes');
-const userRoutes = require('./routes/user.routes');
-const menuRoutes = require('./routes/menu.routes');
-const categoryRoutes = require('./routes/category.routes');
-const reviewRoutes = require('./routes/review.routes');
+const authRoutes = require("./routes/auth.routes");
+const userRoutes = require("./routes/user.routes");
+const menuRoutes = require("./routes/menu.routes");
+const categoryRoutes = require("./routes/category.routes");
+const reviewRoutes = require("./routes/review.routes");
+const otpRoutes = require("./routes/otp.route");
 
 const app = express();
 
@@ -23,40 +25,51 @@ connectDB();
 initAdmin();
 
 // Middleware
-app.use(cors({
+app.use(
+  cors({
     origin: config.CORS_ORIGIN,
-    credentials: true
-}));
+    credentials: true,
+  })
+);
 app.use(express.json());
-app.use(session({
+app.use(
+  session({
     secret: config.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: config.NODE_ENV === 'production',
-        httpOnly: true,
-        maxAge: config.SESSION_EXPIRES
-    }
-}));
-app.use(express.json());
+      secure: config.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: config.SESSION_EXPIRES,
+    },
+  })
+);
 app.use(express.urlencoded({ extended: true })); // Cần thiết cho multer nếu gửi cả text fields
-
+app.use(cookieParser());
 
 // Phục vụ file tĩnh từ thư mục 'public'
-app.use('/api/uploads',express.static(path.join(__dirname, '../public/uploads')));
+app.use(
+  "/api/uploads",
+  express.static(path.join(__dirname, "../public/uploads"))
+);
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/menu', menuRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/reviews', reviewRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/menu", menuRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/otp", otpRoutes);
 
-app.get('/check-image/:filename', (req, res) => {
-  const filePath = path.join(__dirname, 'public/uploads/menu_images', req.params.filename);
+app.get("/check-image/:filename", (req, res) => {
+  const filePath = path.join(
+    __dirname,
+    "public/uploads/menu_images",
+    req.params.filename
+  );
   if (fs.existsSync(filePath)) {
-    res.send('File exists: ' + filePath);
+    res.send("File exists: " + filePath);
   } else {
-    res.status(404).send('File does not exist: ' + filePath);
+    res.status(404).send("File does not exist: " + filePath);
   }
 });
 
@@ -65,5 +78,5 @@ app.use(errorHandler);
 
 // Start server
 app.listen(config.PORT, () => {
-    console.log(`Server is running on port ${config.PORT}`);
-}); 
+  console.log(`Server is running on port ${config.PORT}`);
+});

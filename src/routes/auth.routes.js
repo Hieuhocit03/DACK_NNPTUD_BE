@@ -1,17 +1,14 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const authController = require('../controllers/auth.controller');
+const authController = require("../controllers/auth.controller");
 
 // Đăng ký tài khoản
-router.post('/register', authController.register);
+router.post("/register", authController.register);
 
 // Đăng nhập
-router.post('/login', authController.login);
-
-// Xác thực OTP
-router.post('/verify-otp', authController.verifyOTP);
+router.post("/login", authController.login);
 
 // Đăng xuất
-router.post('/logout', authController.logout);
+router.post("/logout", authController.logout);
 
-module.exports = router; 
+module.exports = router;

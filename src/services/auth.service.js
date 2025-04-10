@@ -121,4 +121,3 @@ exports.login = async (name, password) => {
 
   return otp;
 };
-

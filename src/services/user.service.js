@@ -1,4 +1,3 @@
-
 const _repository = require("../repositories/sub.repository");
 
 class UserService {
@@ -27,4 +26,3 @@ class UserService {
 }
 
 module.exports = new UserService();
-

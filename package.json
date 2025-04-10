@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --inspect src/app.js",
-    "dev": "nodemon --inspect-brk src/app.js"
+    "start": "nodemon --inspect src/server.js",
+    "dev": "nodemon --inspect-brk src/server.js"
   },
   "author": "quyday",
   "license": "ISC",

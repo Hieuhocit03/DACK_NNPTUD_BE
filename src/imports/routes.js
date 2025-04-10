@@ -1,9 +1,9 @@
-const authRoutes = require("../routes/auth.route");
-const userRoutes = require("../routes/user.route");
+const authRoutes = require("../routes/auth.routes");
+const userRoutes = require("../routes/user.routes");
 const otp = require("../routes/otp.route");
 
 module.exports = {
-    authRoutes,
-    userRoutes,
-    otp
+  authRoutes,
+  userRoutes,
+  otp,
 };
