@@ -35,6 +35,19 @@ npm start
 
 ### Authentication
 ```http
+
+#Đăng kí 
+POST /api/auth/register
+Content-Type: application/json
+
+{
+    "name": "User Name",
+    "email": "user@example.com",
+    "password": "Password123",
+    "phone": "0123456789",
+    "address": "User Address"
+}
+
 # Đăng nhập
 POST /api/auth/login
 Content-Type: application/json
