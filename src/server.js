@@ -4,13 +4,18 @@ const session = require('express-session');
 const config = require('./config/config');
 const connectDB = require('./config/database');
 const errorHandler = require('./middlewares/error.middleware');
+const initAdmin = require('./config/initAdmin');
 
 const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
 
 const app = express();
 
 // Connect to MongoDB
 connectDB();
+
+// Khởi tạo admin mặc định
+initAdmin();
 
 // Middleware
 app.use(cors({
@@ -31,6 +36,7 @@ app.use(session({
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
