@@ -1,0 +1,87 @@
+1. reduce() là một phương thức của mảng giúp tính toán một giá trị duy nhất bằng cách lặp qua từng phần tử trong mảng và tích lũy kết quả.
+array.reduce((accumulator, currentValue, currentIndex, array) => {
+    // Logic xử lý
+    return accumulator;
+}, initialValue);
+
+EX:
+[].reduce((sum, transaction) => sum + transaction.amount, 0);
+
+2. 
++ sum (accumulator): Tổng doanh thu được cập nhật sau mỗi vòng lặp.
++ transaction.amount: Giá trị amount của từng giao dịch.
++ 0: Giá trị khởi tạo của sum.
+
+array.splice(start, deleteCount, item1, item2, ...); delete, item is optional
+ex: [].splice(existingReview,1); 
+
+3. populate() trong Mongoose được dùng để truy vấn và tự động thay thế ObjectId bằng dữ liệu thực từ collection được tham chiếu.
+EX: 
+* Khi ko có populate:
+const posts = await Post.find();
+console.log(posts);
+
+Result:
+[
+    {
+        "_id": "post_id_123",
+        "title": "Hello World",
+        "content": "This is my first post.",
+        "author": "user_id_456"  // Chỉ có ID, không có thông tin User
+    }
+]
+
+* Khi có pupulate:
+const posts = await Post.find().populate("author");
+console.log(posts);
+
+result:
+[
+    {
+        "_id": "post_id_123",
+        "title": "Hello World",
+        "content": "This is my first post.",
+        "author": {
+            "_id": "user_id_456",
+            "name": "John Doe",
+            "email": "johndoe@example.com"
+        }
+    }
+]
+
+* Nếu bạn chỉ muốn lấy một số trường của User, sử dụng .populate("author", "name"):
+const posts = await Post.find().populate("author", "name");
+console.log(posts);
+
+result:
+[
+    {
+        "_id": "post_id_123",
+        "title": "Hello World",
+        "content": "This is my first post.",
+        "author": {
+            "_id": "user_id_456",
+            "name": "John Doe"
+        }
+    }
+]
+
+Tổng kết:
+
+Cách dùng populate()	                                                        Mô tả
+.populate("author")	                                                            Lấy toàn bộ thông tin của author
+.populate("author", "name email")	                                            Chỉ lấy name và email của author
+.populate("author", "-_id name")	                                            Chỉ lấy name, bỏ _id của author
+.populate({ path: "author", select: "name", match: { name: "John Doe" } })	    Chỉ lấy author có name = John Doe
+.populate({ path: "author", options: { limit: 5, sort: { name: 1 } } })	        Giới hạn 5 author, sắp xếp theo name
+
+3. array.sort(callback)
+(a, b) => someNumber
+Nếu:
+
+someNumber < 0: a đứng trước b
+someNumber > 0: b đứng trước a
+someNumber === 0: Giữ nguyên vị trí
+EX:  comesticToGet.reviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+
