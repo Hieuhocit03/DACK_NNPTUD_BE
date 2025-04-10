@@ -37,10 +37,15 @@ exports.verifyRoles = (roles) => (req, res, next) => {
   }
 };
 
-const isAuthenticated = (req, res, next) => {
+const isAdmin = (req, res, next) => {
     if (!req.session.user) {
         return res.status(401).json({ message: 'Vui lòng đăng nhập' });
     }
+
+    if (req.session.user.role !== 'ADMIN') {
+        return res.status(403).json({ message: 'Bạn không có quyền truy cập' });
+    }
+
     next();
 };
 
@@ -49,7 +54,6 @@ const isOwnerOrAdmin = (req, res, next) => {
         return res.status(401).json({ message: 'Vui lòng đăng nhập' });
     }
 
-    // Nếu là admin hoặc là chính user đó
     if (req.session.user.role === 'ADMIN' || req.session.user._id === req.params.id) {
         next();
     } else {
@@ -58,6 +62,6 @@ const isOwnerOrAdmin = (req, res, next) => {
 };
 
 module.exports = {
-    isAuthenticated,
+    isAdmin,
     isOwnerOrAdmin
 }; 
