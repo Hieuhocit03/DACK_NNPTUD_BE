@@ -10,7 +10,7 @@ class OTPService {
         const otp = speakeasy.totp({
             secret: process.env.OTP_SECRET,
             encoding: 'base32',
-            step: 60 
+            step: 100
         });
 
         // Cấu hình transporter cho nodemailer
@@ -40,7 +40,7 @@ class OTPService {
             secret: process.env.OTP_SECRET,
             encoding: 'base32',
             token: userInputOTP,
-            step: 60,
+            step: 100,
             window: 0 // chi chap nhan otp moi nhat,nếu là 1 thì chấp nhận cả các otp trước đó
         });
 

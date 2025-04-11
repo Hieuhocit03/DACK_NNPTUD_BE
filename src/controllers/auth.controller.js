@@ -16,7 +16,7 @@ exports.login = async (req, res) => {
     const { name, password } = req.body;
 
     const sendOTP = await _authService.login(name, password);
-    res.status(200).json({ message: sendOTP });
+    res.status(200).json({ OTP: sendOTP });
 
     /*res.cookie("token", token, {
             httpOnly: true, // Bảo mật, không thể truy cập từ frontend JavaScript
