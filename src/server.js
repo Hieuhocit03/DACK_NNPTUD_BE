@@ -11,10 +11,13 @@ const fs = require("fs");
 
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
-const menuRoutes = require("./routes/menu.routes");
+const menuRoutes = require("./routes/menuItem.routes");
 const categoryRoutes = require("./routes/category.routes");
 const reviewRoutes = require("./routes/review.routes");
 const otpRoutes = require("./routes/otp.route");
+const orderRoutes = require("./routes/order.routes");
+const paymentRoutes = require("./routes/payment.routes");
+const contactRoutes = require("./routes/contact.route");
 
 const app = express();
 
@@ -27,8 +30,10 @@ initAdmin();
 // Middleware
 app.use(
   cors({
-    origin: config.CORS_ORIGIN,
-    credentials: true,
+    origin: ["http://localhost:5173", "http://localhost:5174"], // Frontend dev URLs
+    credentials: true, // Cho phép gửi cookie qua
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.json());
@@ -52,14 +57,17 @@ app.use(
   "/api/uploads",
   express.static(path.join(__dirname, "../public/uploads"))
 );
+app.use(express.static(path.join(__dirname, "../public")));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/menu", menuRoutes);
+app.use("/api/menu-items", menuRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/otp", otpRoutes);
-
+app.use("/api/orders", orderRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/contacts", contactRoutes);
 app.get("/check-image/:filename", (req, res) => {
   const filePath = path.join(
     __dirname,

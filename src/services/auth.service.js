@@ -6,6 +6,9 @@ const bcrypt = require("bcryptjs");
 const userRole = require("../enums/userRole.enum");
 const session = require("express-session");
 const _otpService = require("./otp.service");
+const UserRepository = require("../repositories/user.repository");
+
+const userRepoInstance = new UserRepository();
 
 exports.generateToken = (user) => {
   return jwt.sign(
@@ -59,7 +62,7 @@ exports.register = async (newUserRequest) => {
   const hashedPassword = await bcrypt.hash(newUserRequest.password, 10);
   newUserRequest.password = hashedPassword;
 
-  const newUser = await _repository.userRepository.add(newUserRequest);
+  const newUser = await userRepoInstance.add(newUserRequest);
   return newUser;
 };
 

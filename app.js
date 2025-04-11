@@ -21,6 +21,14 @@ mongoose.connection.on("connected", () => {
   console.log("connected");
   console.log("port", process.env.PORT);
 });
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:5174"], // URL của frontend
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(logger("dev"));
 app.use(express.json());

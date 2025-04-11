@@ -1,23 +1,41 @@
-// src/routes/category.routes.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const categoryController = require('../controllers/category.controller');
-const uploadCategoryImage = require('../middlewares/upload.category.middleware');
-const { isAuthenticated, isAdmin } = require('../middlewares/auth.middleware');
+const categoryController = require("../controllers/category.controller");
+const {
+  uploadMenuItem: uploadCategory,
+  handleUploadError,
+} = require("../middlewares/upload.middleware");
+const { isAuthenticated, isAdmin } = require("../middlewares/auth.middleware");
 
-// CREATE - Tạo danh mục mới (chỉ ADMIN)
-router.post('/', isAuthenticated, isAdmin, uploadCategoryImage, categoryController.createCategory);
+// Middleware xử lý lỗi upload
+router.use(handleUploadError);
 
-// READ - Lấy danh sách danh mục (công khai)
-router.get('/', categoryController.getAllCategories);
+// Public routes
+router.get("/", categoryController.getAllCategories);
+router.get("/:id", categoryController.getCategoryById);
 
-// READ - Lấy thông tin danh mục theo ID (công khai)
-router.get('/:id', categoryController.getCategoryById);
+// Admin routes
+router.post(
+  "/",
+  isAuthenticated,
+  isAdmin,
+  uploadCategory,
+  categoryController.createCategory
+);
 
-// UPDATE - Cập nhật danh mục (chỉ ADMIN)
-router.put('/:id', isAuthenticated, isAdmin, uploadCategoryImage, categoryController.updateCategory);
+router.put(
+  "/:id",
+  isAuthenticated,
+  isAdmin,
+  uploadCategory,
+  categoryController.updateCategory
+);
 
-// DELETE - Xóa danh mục (chỉ ADMIN)
-router.delete('/:id', isAuthenticated, isAdmin, categoryController.deleteCategory);
+router.delete(
+  "/:id",
+  isAuthenticated,
+  isAdmin,
+  categoryController.deleteCategory
+);
 
 module.exports = router;

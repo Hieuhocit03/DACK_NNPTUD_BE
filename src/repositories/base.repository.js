@@ -1,4 +1,4 @@
-const User = require("../models/user.model");
+const User = require("../models/user.model"); // Không cần import User ở đây nữa
 
 class BaseRepository {
   constructor(modelName) {
@@ -9,8 +9,9 @@ class BaseRepository {
     }
   }
 
-  async getAll() {
-    return await this.model.find();
+  async getAll(filter = {}, options = {}) {
+    // Thêm filter và options
+    return await this.model.find(filter, null, options);
   }
 
   async getById(id) {
@@ -31,6 +32,11 @@ class BaseRepository {
     return await this.model.find({ _id: { $in: entity_ids } }); // use $in for faster query
   }
 
+  async findOne(filter = {}) {
+    // Thêm hàm findOne
+    return await this.model.findOne(filter);
+  }
+
   async add(data) {
     const item = new this.model(data);
     return await item.save();
@@ -40,8 +46,23 @@ class BaseRepository {
     return await this.model.findByIdAndUpdate(id, data, { new: true });
   }
 
+  async updateOne(filter, data) {
+    // Thêm hàm updateOne
+    return await this.model.findOneAndUpdate(filter, data, { new: true });
+  }
+
   async delete(id) {
     return await this.model.findByIdAndDelete(id);
+  }
+
+  async count(filter = {}) {
+    // Thêm hàm count
+    return await this.model.countDocuments(filter);
+  }
+
+  async aggregate(pipeline = []) {
+    // Thêm hàm aggregate
+    return await this.model.aggregate(pipeline);
   }
 }
 

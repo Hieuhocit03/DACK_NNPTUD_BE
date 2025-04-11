@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const UserRole = require("../enums/userRole.enum");
+const config = require("../config/config");
+const User = require("../models/user.model");
 
 exports.currentUser = (req, res, next) => {
   const token = req.cookies.token;
@@ -38,6 +40,7 @@ exports.verifyRoles = (roles) => (req, res, next) => {
 };
 
 exports.isAuthenticated = async (req, res, next) => {
+  console.log("isAuthenticated", req.headers);
   try {
     // Lấy token từ header
     const authHeader = req.headers.authorization;
@@ -49,6 +52,7 @@ exports.isAuthenticated = async (req, res, next) => {
 
     // Verify token
     const decoded = jwt.verify(token, config.JWT_SECRET);
+    console.log(decoded);
 
     // Kiểm tra người dùng có tồn tại không
     const user = await User.findById(decoded.id).select("-password");

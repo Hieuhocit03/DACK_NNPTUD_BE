@@ -152,6 +152,65 @@ class ScheduleRepository extends BaseRepository {
   }
 }
 
+class CategoryRepository extends BaseRepository {
+  constructor() {
+    super("Category");
+  }
+
+  async getActiveCategories() {
+    return await this.model.find({ status: true });
+  }
+}
+
+class MenuItemRepository extends BaseRepository {
+  constructor() {
+    super("MenuItem");
+  }
+
+  async getByCategory(categoryId) {
+    return await this.model.find({ category: categoryId, status: true });
+  }
+
+  async getTopRated(limit = 5) {
+    return await this.model
+      .find({ status: true })
+      .sort({ ratingAverage: -1 })
+      .limit(limit);
+  }
+
+  async search(query) {
+    return await this.model.find({
+      $text: { $search: query },
+      status: true,
+    });
+  }
+}
+
+class ReviewRepository extends BaseRepository {
+  constructor() {
+    super("Review");
+  }
+
+  async getByMenuItem(menuItemId) {
+    return await this.model
+      .find({ menuItem: menuItemId, status: "approved" })
+      .populate("user", "name");
+  }
+
+  async getPendingReviews() {
+    return await this.model
+      .find({ status: "pending" })
+      .populate("user", "name")
+      .populate("menuItem", "name");
+  }
+
+  async getUserReviews(userId) {
+    return await this.model
+      .find({ user: userId })
+      .populate("menuItem", "name image");
+  }
+}
+
 module.exports = {
   userRepository: new UserRepository(),
   appointmentRepository: new AppointmentRepository(),
@@ -163,4 +222,7 @@ module.exports = {
   treatmentRepository: new TreatmentRepository(),
   transactionRepository: new TransactionRepository(),
   scheduleRepository: new ScheduleRepository(),
+  categoryRepository: new CategoryRepository(),
+  menuItemRepository: new MenuItemRepository(),
+  reviewRepository: new ReviewRepository(),
 };
