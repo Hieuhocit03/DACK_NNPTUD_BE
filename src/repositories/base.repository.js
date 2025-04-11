@@ -1,11 +1,15 @@
-const User = require("../models/user.model");
+const mongoose = require("mongoose");
 
 class BaseRepository {
   constructor(modelName) {
-    this.model = User;
-
-    if (!this.model) {
-      throw new Error(`Model '${modelName}' không tồn tại.`);
+    if (!modelName) {
+      throw new Error("Tên model là bắt buộc");
+    }
+    
+    try {
+      this.model = mongoose.model(modelName);
+    } catch (error) {
+      throw new Error(`Model '${modelName}' không tồn tại hoặc chưa được đăng ký.`);
     }
   }
 
@@ -28,7 +32,7 @@ class BaseRepository {
   }
 
   async find(entity_ids) {
-    return await this.model.find({ _id: { $in: entity_ids } }); // use $in for faster query
+    return await this.model.find({ _id: { $in: entity_ids } });
   }
 
   async add(data) {
