@@ -5,8 +5,7 @@ const {
   uploadMenuItem,
   handleUploadError,
 } = require("../middlewares/upload.middleware");
-const { currentUser, verifyRoles } = require("../middlewares/auth.middleware");
-const UserRole = require("../enums/userRole.enum");
+const { isAuthenticated, isAdmin } = require("../middlewares/auth.middleware");
 
 // Middleware xử lý lỗi upload
 router.use(handleUploadError);
@@ -21,24 +20,24 @@ router.get("/category/:categoryId", menuItemController.getMenuItemsByCategory);
 // Admin routes
 router.post(
   "/",
-  currentUser,
-  verifyRoles([UserRole.ADMIN]),
+  isAuthenticated,
+  isAdmin,
   uploadMenuItem,
   menuItemController.createMenuItem
 );
 
 router.put(
   "/:id",
-  currentUser,
-  verifyRoles([UserRole.ADMIN]),
+  isAuthenticated,
+  isAdmin,
   uploadMenuItem,
   menuItemController.updateMenuItem
 );
 
 router.delete(
   "/:id",
-  currentUser,
-  verifyRoles([UserRole.ADMIN]),
+  isAuthenticated,
+  isAdmin,
   menuItemController.deleteMenuItem
 );
 

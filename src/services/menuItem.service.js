@@ -1,13 +1,16 @@
-const _repository = require("../repositories/sub.repository");
+const _repository = require("../repositories/menuItem.repository");
+const category = require("../models/category.model");
 const fs = require("fs");
 const path = require("path");
 
+const repository = new _repository();
+
 exports.getAllMenuItems = async () => {
-  return await _repository.menuItemRepository.getAll();
+  return await repository.getAll();
 };
 
 exports.getMenuItemById = async (id) => {
-  const menuItem = await _repository.menuItemRepository.getById(id);
+  const menuItem = await repository.getById(id);
 
   if (!menuItem) {
     throw Object.assign(new Error("Món ăn không tồn tại"), { status: 404 });
@@ -18,22 +21,21 @@ exports.getMenuItemById = async (id) => {
 
 exports.getMenuItemsByCategory = async (categoryId) => {
   // Kiểm tra danh mục tồn tại
-  const category = await _repository.categoryRepository.getById(categoryId);
+  const category = await category.findById(categoryId);
 
   if (!category) {
     throw Object.assign(new Error("Danh mục không tồn tại"), { status: 404 });
   }
 
-  return await _repository.menuItemRepository.getByCategory(categoryId);
+  return await repository.menuItemRepository.getByCategory(categoryId);
 };
 
 exports.createMenuItem = async (menuItemData, imageFile) => {
   // Kiểm tra danh mục tồn tại
-  const category = await _repository.categoryRepository.getById(
-    menuItemData.category
-  );
+  const category1 = await category.findById(menuItemData.category);
+  console.log(category1);
 
-  if (!category) {
+  if (!category1) {
     throw Object.assign(new Error("Danh mục không tồn tại"), { status: 404 });
   }
 
@@ -55,12 +57,12 @@ exports.createMenuItem = async (menuItemData, imageFile) => {
     menuItemData.image = imagePath;
   }
 
-  return await _repository.menuItemRepository.add(menuItemData);
+  return await repository.create(menuItemData);
 };
 
 exports.updateMenuItem = async (id, menuItemData, imageFile) => {
   // Kiểm tra món ăn tồn tại
-  const menuItem = await _repository.menuItemRepository.getById(id);
+  const menuItem = await repository.getById(id);
 
   if (!menuItem) {
     throw Object.assign(new Error("Món ăn không tồn tại"), { status: 404 });
@@ -68,11 +70,9 @@ exports.updateMenuItem = async (id, menuItemData, imageFile) => {
 
   // Kiểm tra danh mục tồn tại nếu có cập nhật danh mục
   if (menuItemData.category) {
-    const category = await _repository.categoryRepository.getById(
-      menuItemData.category
-    );
+    const category1 = await category.findById(menuItemData.category);
 
-    if (!category) {
+    if (!category1) {
       throw Object.assign(new Error("Danh mục không tồn tại"), { status: 404 });
     }
   }
@@ -104,12 +104,12 @@ exports.updateMenuItem = async (id, menuItemData, imageFile) => {
     menuItemData.image = imagePath;
   }
 
-  return await _repository.menuItemRepository.update(id, menuItemData);
+  return await repository.update(id, menuItemData);
 };
 
 exports.deleteMenuItem = async (id) => {
   // Kiểm tra món ăn tồn tại
-  const menuItem = await _repository.menuItemRepository.getById(id);
+  const menuItem = await repository.getById(id);
 
   if (!menuItem) {
     throw Object.assign(new Error("Món ăn không tồn tại"), { status: 404 });
@@ -124,15 +124,15 @@ exports.deleteMenuItem = async (id) => {
   }
 
   // Xóa các đánh giá liên quan
-  await _repository.reviewRepository.model.deleteMany({ menuItem: id });
+  // await review.deleteMany({ menuItem: id });
 
-  return await _repository.menuItemRepository.delete(id);
+  return await repository.delete(id);
 };
 
 exports.searchMenuItems = async (query) => {
-  return await _repository.menuItemRepository.search(query);
+  return await repository.menuItemRepository.search(query);
 };
 
 exports.getTopRatedMenuItems = async (limit) => {
-  return await _repository.menuItemRepository.getTopRated(limit);
+  return await repository.menuItemRepository.getTopRated(limit);
 };

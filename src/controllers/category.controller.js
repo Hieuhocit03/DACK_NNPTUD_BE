@@ -19,26 +19,49 @@ exports.getCategoryById = async (req, res) => {
 };
 
 exports.createCategory = async (req, res) => {
+  console.log(
+    "[Category Controller] createCategory called. Body:",
+    req.body,
+    "File:",
+    req.file?.originalname
+  );
   try {
     const newCategory = await _categoryService.createCategory(
       req.body,
       req.file
     );
+    console.log(
+      "[Category Controller] Category created successfully, sending response."
+    );
     res.status(201).json(newCategory);
   } catch (error) {
+    console.error("[Category Controller] Error in createCategory:", error);
     res.status(error.status || 500).json({ message: error.message });
   }
 };
 
 exports.updateCategory = async (req, res) => {
+  console.log(
+    `[Category Controller] updateCategory called for ID: ${req.params.id}. Body:`,
+    req.body,
+    "File:",
+    req.file?.originalname
+  );
   try {
     const updatedCategory = await _categoryService.updateCategory(
       req.params.id,
       req.body,
       req.file
     );
+    console.log(
+      "[Category Controller] Category updated successfully, sending response."
+    );
     res.status(200).json(updatedCategory);
   } catch (error) {
+    console.error(
+      `[Category Controller] Error in updateCategory for ID ${req.params.id}:`,
+      error
+    );
     res.status(error.status || 500).json({ message: error.message });
   }
 };

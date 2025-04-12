@@ -47,10 +47,17 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
-    const deletedUser = await userService.delete(req.params.id);
-    if (!deletedUser)
-      return res.status(404).json({ message: "Ko tìm thấy user" });
-    res.json({ message: "Xóa user thành công" });
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "Thiếu ID người dùng" });
+    }
+
+    const deletedUser = await _userService.delete(id);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    res.json({ message: "Xóa người dùng thành công" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

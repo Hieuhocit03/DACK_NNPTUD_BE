@@ -12,51 +12,101 @@ const createUploadDir = () => {
 
 createUploadDir();
 
-// Middleware xử lý tệp
+// Cấu hình lưu trữ (memory storage)
+const storage = multer.memoryStorage();
+console.log("[Upload Middleware] Using memoryStorage");
+
+// Hàm kiểm tra loại file
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) {
-    cb(null, true);
+  console.log(
+    "[Upload Middleware] fileFilter checking file:",
+    file.originalname,
+    file.mimetype
+  );
+  const allowedTypes = /jpeg|jpg|png|gif|webp/;
+  const mimetype = allowedTypes.test(file.mimetype);
+  const extname = allowedTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+
+  if (mimetype && extname) {
+    console.log("[Upload Middleware] fileFilter: File type accepted");
+    return cb(null, true);
   } else {
-    cb(new Error("Chỉ cho phép tải lên tệp hình ảnh!"), false);
+    console.log("[Upload Middleware] fileFilter: File type rejected");
+    // Truyền lỗi vào callback để middleware xử lý lỗi bắt được
+    cb(
+      new Error(
+        "Chỉ chấp nhận file ảnh (jpeg, jpg, png, gif, webp)!",
+        "LIMIT_UNEXPECTED_FILE"
+      ),
+      false
+    );
   }
 };
 
-// Menu Item Upload
-const menuItemStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../../public/uploads/menu_images"));
+// Cấu hình Multer
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1 * 1024 * 1024, // Giới hạn 1MB
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const imagePath = `/uploads/menu_images/${uniqueSuffix}-${path.extname(
-      file.originalname
-    )}`;
-    const fullPath = path.join(
-      __dirname,
-      "../../public/uploads/menu_images",
-      path.basename(imagePath)
-    );
-    cb(null, imagePath);
-  },
-});
-
-const menuItemUpload = multer({
-  storage: menuItemStorage,
   fileFilter: fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
-// Error handler middleware
+console.log("[Upload Middleware] Multer configured with fileSize limit: 1MB");
+
+// Middleware cho upload một ảnh (ví dụ: category, menuItem)
+// Sử dụng .single(fieldName) - fieldName phải khớp với tên trường trong FormData
+const uploadSingleImage = (fieldName) => {
+  console.log(
+    `[Upload Middleware] Setting up single upload for field: ${fieldName}`
+  );
+  return (req, res, next) => {
+    console.log(
+      `[Upload Middleware] Attempting single upload for field: ${fieldName}`
+    );
+    const uploadSingle = upload.single(fieldName);
+
+    uploadSingle(req, res, (err) => {
+      if (err) {
+        console.error("[Upload Middleware] Error during single upload:", err);
+        // Chuyển lỗi cho middleware xử lý lỗi chung
+        return next(err);
+      } else {
+        console.log(
+          `[Upload Middleware] Single upload for field ${fieldName} successful. req.file:`,
+          req.file
+        );
+        next(); // Chuyển tiếp nếu không có lỗi
+      }
+    });
+  };
+};
+
+// Middleware xử lý lỗi từ Multer và các lỗi khác
 const handleUploadError = (err, req, res, next) => {
+  console.log("[Upload Middleware] handleUploadError caught error:", err);
   if (err instanceof multer.MulterError) {
-    return res.status(400).json({ message: `Lỗi tải ảnh: ${err.message}` });
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res
+        .status(400)
+        .json({ message: "Kích thước file quá lớn (tối đa 1MB)." });
+    }
+    // Xử lý các lỗi Multer khác nếu cần
+    return res.status(400).json({ message: `Lỗi upload: ${err.message}` });
   } else if (err) {
-    return res.status(400).json({ message: err.message });
+    // Lỗi từ fileFilter hoặc lỗi khác
+    return res
+      .status(400)
+      .json({ message: err.message || "Lỗi không xác định khi upload file." });
   }
+  // Nếu không có lỗi, chuyển tiếp
   next();
 };
 
 module.exports = {
-  uploadMenuItem: menuItemUpload.single("image"),
+  uploadMenuItem: uploadSingleImage("image"), // Giả sử field name là 'image'
+  uploadCategory: uploadSingleImage("image"), // Giả sử field name là 'image'
   handleUploadError,
 };

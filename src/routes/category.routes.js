@@ -19,7 +19,18 @@ router.post(
   "/",
   isAuthenticated,
   isAdmin,
+  (req, res, next) => {
+    console.log("[Route /api/categories POST] Before upload middleware");
+    next();
+  },
   uploadCategory,
+  (req, res, next) => {
+    console.log(
+      "[Route /api/categories POST] After upload middleware, file:",
+      req.file
+    );
+    next();
+  },
   categoryController.createCategory
 );
 
@@ -27,7 +38,20 @@ router.put(
   "/:id",
   isAuthenticated,
   isAdmin,
+  (req, res, next) => {
+    console.log(
+      `[Route /api/categories PUT ${req.params.id}] Before upload middleware`
+    );
+    next();
+  },
   uploadCategory,
+  (req, res, next) => {
+    console.log(
+      `[Route /api/categories PUT ${req.params.id}] After upload middleware, file:`,
+      req.file
+    );
+    next();
+  },
   categoryController.updateCategory
 );
 
